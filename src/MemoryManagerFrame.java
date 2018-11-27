@@ -1,6 +1,7 @@
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.Comparator;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -15,32 +17,46 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 /*
- * @author Jandre
- */
+| @author Jandre
+|`This class stores the JFrame of the application. The application includes:
+|   -3 Panels (Button Panel, Radio Button Panel, Diagram Panel)
+|   -2 Tables and Scroll Panes (Segment Table, Queue Table)
+|   -2 Labels for each table
+*/
 public class MemoryManagerFrame extends JFrame
 {
     //Java Components
-    ButtonPanel panel1 = new ButtonPanel();
-    JScrollPane segmentScrollPane, queueScrollPane;
-    MemoryManagerDiagram panel2 = new MemoryManagerDiagram();
-    FitPanel panel3 = new FitPanel();
-    JTable segmentTable, queueTable;
+    ButtonPanel panel1 = new ButtonPanel();                         //The component that holds the buttons
+    JScrollPane segmentScrollPane, queueScrollPane;                 //These scroll panes hold the segment and queue tables
+    MemoryManagerDiagram panel2 = new MemoryManagerDiagram();       //The canvas component that holds the diagram
+    FitPanel panel3 = new FitPanel();                               //The component that holds the radio buttons
+    JTable segmentTable, queueTable;                                //The segment table stores data of the processes in memory; the queue table stores data in the waiting queue.
+    JLabel segmentTableLabel, queueTableLabel;                      //The labels indicate 
     
-    //Table Data
-    String[] segmentTableNames  = {"Segment #", "Segment Base", "Segment Length", "Burst Time"};
-    Object[][] segmentTableData = {{0, 0, 50, 100}, {1, 210, 200, 200}, {2, 150, 50, 25}};
+    //Segment Table Data
+    String[] segmentTableNames  = {"Segment #", "Segment Base", "Segment Length", "Burst Time"};    //These are the names of the segment table
+    Object[][] segmentTableData = {{0, 0, 50, 100}, {1, 210, 200, 200}, {2, 150, 50, 25}};          //This is the segment table's data
     
-    String[] queueTableNames  = {"Segment #", "Segment Base", "Segment Length", "Burst Time"};
-    Object[][] queueTableData = {{0, 0, 50, 100}, {1, 210, 200, 200}, {2, 150, 50, 25}};
+    //Queue Table Data
+    String[] queueTableNames  = {"Segment #", "Segment Base", "Segment Length", "Burst Time"};      //These are the names of the queue table
+    Object[][] queueTableData = {};                                                                 //This is the queue table's data
     int numberOfSegments = 3;
     
-    public MemoryManagerFrame()
+    public MemoryManagerFrame()                                 //Initializes the application
     {
-        this.setTitle("Memory Manager");
-        this.setSize(800, 750);
-        this.setResizable(false);
-        this.setLayout(null);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setTitle("Memory Manager");                        //The Title of the app is "Memory Manager"
+        this.setSize(800, 750);                                 //The dimension of the app is 800 x 750
+        this.setResizable(false);                               //The app is not resizable
+        this.setLayout(null);                                   //This allows any components to be placed anywhere with no restrictions
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);    //This allows the program to stop when the app is closed.
+        
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage("images/icon.png"));
+        
+        /*
+        |   This section creates the panels. The first chunk creates the button panel, the second creates the diagram and the third creates the radio button panel.
+        |   The first line determines where the scroll pane will be placed.
+        |   The second line adds the scroll pane to the application.
+        */
         
         panel1.setBounds(25, 20, 740, 40);
         this.add(panel1);
@@ -51,6 +67,14 @@ public class MemoryManagerFrame extends JFrame
         panel3.setBounds(100, 60, 740, 40);
         this.add(panel3);
         
+        /*
+        |   The next section creates the tables. The first chunk creates the segment table and the second creates the queue table.
+        |   The first line creates the table based on the data and the table column names, respectively
+        |   The second line create the scroll pane that holds the table, with parameters that never allows the JScrollPane to create a scrollbar.
+        |   The third line determines where the scroll pane will be placed.
+        |   The fourth line adds the scroll pane to the application.
+        */
+        
         segmentTable = new JTable(segmentTableData, segmentTableNames);
         segmentScrollPane = new JScrollPane(segmentTable, JScrollPane.VERTICAL_SCROLLBAR_NEVER , JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         segmentScrollPane.setBounds(350, 100, 415, 280);
@@ -60,9 +84,14 @@ public class MemoryManagerFrame extends JFrame
         queueScrollPane = new JScrollPane(queueTable, JScrollPane.VERTICAL_SCROLLBAR_NEVER , JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         queueScrollPane.setBounds(350, 420, 415, 280);
         this.add(queueScrollPane);
+        
         updateTable();
         this.setVisible(true);
     }
+    
+    /*
+    |   The updateTable method is called whenever the data of either table is updated.
+    */
     
     public void updateTable()
     {
