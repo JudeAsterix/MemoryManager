@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MemoryManagerDiagram extends Canvas{
-    private int[][] segmentData = {{0, 100}, {150, 25}, {175, 200}}; //Stores the segment base, length, snd number, respectively.
+    private int[][] segmentData = {{0, 0, 50}, {1, 150, 25}, {2, 200, 200}}; //Stores the segment base, length, snd number, respectively.
     
     public MemoryManagerDiagram()
     {
@@ -20,8 +20,9 @@ public class MemoryManagerDiagram extends Canvas{
         FontMetrics fm = g.getFontMetrics();
         for(int i = 0; i < segmentData.length; i++)
         {
-            int lower = segmentData[i][0];
-            int height = segmentData[i][1];
+            int lower = segmentData[i][1];
+            int height = segmentData[i][2];
+            int number = segmentData[i][0];
             g.setColor(Color.lightGray);
             g.fillRect(50, lower + 50, 200, height);
             g.setColor(Color.gray);
@@ -29,7 +30,7 @@ public class MemoryManagerDiagram extends Canvas{
             g.setColor(Color.black);
             g.drawString(Integer.toString(lower), 45 - fm.stringWidth(Integer.toString(lower)), lower + 55);
             g.drawString(Integer.toString(lower + height), 45 - fm.stringWidth(Integer.toString(lower + height)), lower + height + 55);
-            g.drawString("Segment " + i, 150 - (fm.stringWidth("Segment " + i) / 2), 50 + ((2 * lower + height) / 2) + (fm.getHeight() / 2));
+            g.drawString("Segment " + number, 150 - (fm.stringWidth("Segment " + i) / 2), 50 + ((2 * lower + height) / 2) + (fm.getHeight() / 2));
         }
         
         this.setBackground(Color.white);
@@ -44,12 +45,13 @@ public class MemoryManagerDiagram extends Canvas{
     
     public void updateDrawingData(Object[][] data)
     {
-        segmentData = new int[data.length][2];
+        segmentData = new int[data.length][3];
         
         for(int i = 0; i < data.length; i++)
         {
             segmentData[i][0] = (Integer)(data[i][0]);
             segmentData[i][1] = (Integer)(data[i][1]);
+            segmentData[i][2] = (Integer)(data[i][2]);
         }
         repaint();
     }

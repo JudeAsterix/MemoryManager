@@ -1,19 +1,19 @@
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
+import java.util.Comparator;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
 /*
  * @author Jandre
  */
@@ -21,20 +21,23 @@ public class MemoryManagerFrame extends JFrame
 {
     //Java Components
     ButtonPanel panel1 = new ButtonPanel();
-    JScrollPane scrollPane;
+    JScrollPane segmentScrollPane, queueScrollPane;
     MemoryManagerDiagram panel2 = new MemoryManagerDiagram();
     FitPanel panel3 = new FitPanel();
-    JTable segmentTable;
-    ButtonGroup methods = new ButtonGroup();
+    JTable segmentTable, queueTable;
     
     //Table Data
-    String[] segmentTableNames  = {"Segment Base", "Segment Length", "Burst Time", "Segment #"};
-    Object[][] segmentTableData = {{0, 0, 50, 100}, {1, 150, 75, 25}, {2, 175, 25, 200}};
+    String[] segmentTableNames  = {"Segment #", "Segment Base", "Segment Length", "Burst Time"};
+    Object[][] segmentTableData = {{0, 0, 50, 100}, {1, 210, 200, 200}, {2, 150, 50, 25}};
+    
+    String[] queueTableNames  = {"Segment #", "Segment Base", "Segment Length", "Burst Time"};
+    Object[][] queueTableData = {{0, 0, 50, 100}, {1, 210, 200, 200}, {2, 150, 50, 25}};
+    int numberOfSegments = 3;
     
     public MemoryManagerFrame()
     {
         this.setTitle("Memory Manager");
-        this.setSize(800, 800);
+        this.setSize(800, 750);
         this.setResizable(false);
         this.setLayout(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,10 +52,15 @@ public class MemoryManagerFrame extends JFrame
         this.add(panel3);
         
         segmentTable = new JTable(segmentTableData, segmentTableNames);
-        scrollPane = new JScrollPane(segmentTable, JScrollPane.VERTICAL_SCROLLBAR_NEVER , JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setBounds(350, 100, 415, 600);
-        this.add(scrollPane);
+        segmentScrollPane = new JScrollPane(segmentTable, JScrollPane.VERTICAL_SCROLLBAR_NEVER , JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        segmentScrollPane.setBounds(350, 100, 415, 280);
+        this.add(segmentScrollPane);
         
+        queueTable = new JTable(queueTableData, queueTableNames);
+        queueScrollPane = new JScrollPane(queueTable, JScrollPane.VERTICAL_SCROLLBAR_NEVER , JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        queueScrollPane.setBounds(350, 420, 415, 280);
+        this.add(queueScrollPane);
+        updateTable();
         this.setVisible(true);
     }
     
@@ -82,6 +90,7 @@ public class MemoryManagerFrame extends JFrame
             }
         });
         ((AbstractTableModel)(segmentTable.getModel())).fireTableDataChanged();
+        panel2.updateDrawingData(segmentTableData);
     }
     
     public class ButtonPanel extends JPanel
@@ -89,7 +98,7 @@ public class MemoryManagerFrame extends JFrame
         JButton[] buttons;
         public ButtonPanel()
         {
-            this.setLayout(new GridLayout(1, 5, 25, 0));
+            this.setLayout(new GridLayout(1, 6, 25, 0));
             
             buttons = new JButton[5];
             for(int i = 0; i < buttons.length; i++)
@@ -100,9 +109,13 @@ public class MemoryManagerFrame extends JFrame
             }
             
             buttons[0].setText("Add New Segment");
+            buttons[0].addActionListener(new AddSegmentAction());
             buttons[1].setText("<html><center>Add Random<br>Segment</html>");
-            buttons[2].setText("Let Quantum Pass");
-            buttons[3].setText("Compact");
+            buttons[1].addActionListener(new AddSegmentAction());
+            buttons[2].setText("Compact");
+            buttons[2].addActionListener(new ChangeSegmentsAction());
+            buttons[3].setText("Remove Segment");
+            buttons[3].addActionListener(new RemoveSegmentAction());
             buttons[4].setText("Reset");
             buttons[4].addActionListener(new ResetAction());
             
@@ -115,6 +128,7 @@ public class MemoryManagerFrame extends JFrame
     
     public class FitPanel extends JPanel
     {
+        ButtonGroup methods = new ButtonGroup();
         JRadioButton[] buttons;
         public FitPanel()
         {
@@ -128,14 +142,16 @@ public class MemoryManagerFrame extends JFrame
             }
             
             buttons[0].setText("First Fit");
-            buttons[0].setEnabled(true);
             buttons[1].setText("Best Fit");
             buttons[2].setText("Worst Fit");
             
             for(int i = 0; i < buttons.length; i++)
             {
+                methods.add(buttons[i]);
                 add(buttons[i]);
             }
+            
+            buttons[0].setSelected(true);
         }
     }
     
@@ -144,8 +160,101 @@ public class MemoryManagerFrame extends JFrame
         public void actionPerformed(ActionEvent e) 
         {
             segmentTableData = new Object[0][3];
-            panel2.updateDrawingData(segmentTableData);
             updateTable();
+        }
+    }
+    
+    public class AddSegmentAction implements ActionListener
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            if(e.getSource() == panel1.getComponent(1))
+            {
+                
+            }
+        }
+    }
+    
+    public class ChangeSegmentsAction implements ActionListener
+    {
+        public void actionPerformed(ActionEvent e)
+        {
+            if(e.getSource() == panel1.getComponent(2)) //Compact
+            {
+                int[] order = new int[segmentTableData.length];
+                Object[][] processTemp = segmentTableData.clone();
+                Object[][] processTemp2 = segmentTableData.clone();
+                Arrays.sort(processTemp, new Comparator<Object[]>(){
+                    public int compare(Object[] a, Object[] b) {
+                        return Integer.compare((Integer)(a[1]),(Integer)(b[1]));
+                    }
+                });
+                for(int i = 0; i < order.length; i++)
+                {
+                    order[i] = (Integer)processTemp[i][0];
+                }
+                
+                Object[][] newSegmentData = new Object[segmentTableData.length][4];
+                
+                for(int i = 0; i < order.length; i++)
+                {
+                    newSegmentData[i][0] = order[i];
+                    if(i == 0)
+                    {
+                        newSegmentData[i][1] = 0;
+                    }
+                    else
+                    {
+                        newSegmentData[i][1] = (Integer)newSegmentData[i - 1][1] + (Integer)newSegmentData[i - 1][2];
+                    }
+                    newSegmentData[i][2] = segmentTableData[order[i]][2];
+                    newSegmentData[i][3] = segmentTableData[order[i]][3];
+                }
+                
+                Arrays.sort(newSegmentData, new Comparator<Object[]>(){
+                    public int compare(Object[] a, Object[] b) {
+                        return Integer.compare((Integer)(a[0]),(Integer)(b[0]));
+                    }
+                });
+                segmentTableData = newSegmentData;
+                updateTable();
+            }
+        }
+    }
+    
+    public class RemoveSegmentAction implements ActionListener
+    {
+        public void actionPerformed(ActionEvent ae) {
+            Object[] list = new Object[segmentTableData.length];
+            
+            for(int i = 0; i < list.length; i++)
+            {
+                list[i] = i;
+            }
+            
+            Integer num = (Integer)(JOptionPane.showInputDialog(null, "Please specify which process to delete.", "Remove Process", JOptionPane.INFORMATION_MESSAGE, null, list, 1));
+            
+            if(num != null)
+            {
+                Object[][] newSegmentData = new Object[segmentTableData.length - 1][4];
+                
+                for(int i = 0; i < newSegmentData.length; i++)
+                {
+                    if(i < num)
+                    {
+                        newSegmentData[i] = segmentTableData[i];
+                    }
+                    else
+                    {
+                        newSegmentData[i] = segmentTableData[i + 1];
+                        newSegmentData[i][0] = (Integer)newSegmentData[i][0] - 1;
+                    }
+                }
+                segmentTableData = newSegmentData;
+                updateTable();
+            }
+            
+            
         }
     }
 }
