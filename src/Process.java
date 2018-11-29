@@ -8,18 +8,18 @@ public class Process
     
     public Process()
     {
-        processID = -1; //
-        processSize = -1; //
-        base = -1; //
-        limit = -1; //
+        processID = -1; //By default, the ID number of the process is set to -1. 
+        processSize = -1; //By default, the size of the process is set to -1. 
+        base = -1; //By default, the base register of the process is set to -1. 
+        limit = -1; //By default, the limit register of the process is set to -1. 
     }
     
     public Process(int processID, int processSize)
     {
         this.processID = processID; //
         this.processSize = processSize; //
-        base = -1; //
-        limit = -1; //
+        base = -1; //By default, the base register of the process is set to -1. 
+        limit = -1; //By default, the limit register of the process is set to -1. 
     }
     
     public int getID()
