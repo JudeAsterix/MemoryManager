@@ -63,8 +63,10 @@ public class MemoryManager
                     }
                 }
                 
-                identifyHoles(); //Regardless of what happens, every hole within memory is identified. 
-                
+                if (choice != 6) //If the user did not decide to exit...
+                {
+                    identifyHoles(); //Every hole within memory is identified. 
+                }                
             }
         }
         
@@ -207,19 +209,21 @@ public class MemoryManager
         }
     }
     
-    //This method will invoke thre first-fit allocation algorithm, in which the input process is placed in the smallest hole which is large enough to contain it. 
+    //This method will invoke the first-fit allocation algorithm, in which the input process is placed in the smallest hole which is large enough to contain it. 
     public static void bestFit(Process process)
     {
         boolean fit = false; //Flag indicating whether the process passed in through the parameter is able to fit into memory.
-        int minimum = Integer.MAX_VALUE; //Desired minimum value
+        int minimum = Integer.MAX_VALUE; //The size of the smallest hole cuurnetly in memory. 
         int minimumIndex = -1; //Index in arraylist at which the desired minimum value is found
+        
+        //This for loop will find the smallest hole currently in memory. 
         for (int i = 0; i < holes.size(); i++)
         {
-            if (process.getSize() <= holes.get(i) && holes.get(i) < minimum)
+            if (process.getSize() <= holes.get(i) && holes.get(i) < minimum) //If the size of the process can fit into the hole being observed and that hole has a smaller size than the recorded minimum value...
             {
                 fit = true; //The process is able to fit into something!
-                minimum = holes.get(i); //
-                minimumIndex = i; //
+                minimum = holes.get(i); //The minimum value is recorded. 
+                minimumIndex = i; //The index in the arraylist where the minimum value is found is recorded as well. 
                 if (holes.get(i) == process.getSize()) //In the case where the size of the hole is exactly equal to the size of the process to fit into memory...
                 {
                     break; //IMMEDIATELY EXIT THE LOOP; we don't need to go any further. 
@@ -229,33 +233,32 @@ public class MemoryManager
         
         if (fit) //If the process can fit into memory...
         {
-            //Find the process(es) which make the smallest hole and fit the new one between them.!
             if (memory.isEmpty()) //If the memory is empty...
             {
-               process.setBase(0); //
+               process.setBase(0); //The base register of the process is set to 0. 
             }
             else //Otherwise, if there is at least one process in memory...
             {
-                if (minimumIndex == 0 && memory.get(0).getBase() > 0) //If THIS...
+                if (minimumIndex == 0 && memory.get(0).getBase() > 0) //If the smallest hole is found in the beginning of memory and the base register of the first process is larger than 0...
                 {
-                    process.setBase(0); //
+                    process.setBase(0); //The base register of the process is set to 0. 
                     process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
                     memory.add(0, process); //The process is added to the beginning of memory. 
                 }
-                else if(minimumIndex == holes.size() && memory.get(0).getLimit() > MAX) //Otherwise, if THAT...
+                else if(minimumIndex == (holes.size()-1) && memory.get(memory.size()-1).getLimit() < MAX) //Otherwise, if the smallest hole is found at the end of memory and the limit register of the last process is smaller than the maximum number of addresses...
                 {
-                    process.setBase(memory.get(memory.size()-1).getLimit()); //
+                    process.setBase(memory.get(memory.size()-1).getLimit()); //The base register of the process is set to the limit register of the last process. 
                     process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
                     memory.add(process); //The process is added to the end of memory. 
                 }
-                else //
+                else //If neither of the above cases are true...
                 {
-                    //This for loop will DO SOME STUFF!
+                    //This for loop will look for the hole in memory between two processes whose length is equal to the smallest hole that was found. 
                     for (int i = 0; i < memory.size()-1; i++)
                     {
-                        if (memory.get(i+1).getBase() - memory.get(i).getLimit() == minimum) //If THIS...
+                        if (memory.get(i+1).getBase() - memory.get(i).getLimit() == minimum) //If the difference between the limit register of the current process and the base register of the process which follows it is equal to the minimum value...
                         {
-                            process.setBase(memory.get(i).getLimit()); //
+                            process.setBase(memory.get(i).getLimit()); //The base register of the process is set to the limit register of the current process being observed. 
                             process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
                             memory.add(i+1, process); //The process is added to the area in memory between the two processes. 
                             break; //IMMEDIATELY EXIT THE LOOP; we don't need to go any further. 
@@ -263,7 +266,6 @@ public class MemoryManager
                     }
                 }
             }
-            
             
             holes.set(minimumIndex, holes.get(minimumIndex) - process.getSize()); //The size of the hole is reduced by the size of the process. 
         }
@@ -276,27 +278,62 @@ public class MemoryManager
     //This method will invoke thre first-fit allocation algorithm, in which the input process is placed in the largest hole which is large enough to contain it. 
     public static void worstFit(Process process)
     {
-        boolean fit = false; //Flag indicating whether the process passed in through the parameter is able to fit into memory
-        int maximum = Integer.MIN_VALUE; //Desired maximum value
-        int maximumIndex = -1; //Index in arraylist at which the desired minimum value is found
+        boolean fit = false; //Flag indicating whether the process passed in through the parameter is able to fit into memory.
+        int maximum = Integer.MIN_VALUE; //The size of the largest hole cuurnetly in memory. 
+        int maximumIndex = -1; //Index in arraylist at which the desired maximum value is found
+        
+        //This for loop will find the largest hole currently in memory. 
         for (int i = 0; i < holes.size(); i++)
         {
-            if (process.getSize() <= holes.get(i) && holes.get(i) > maximum)
+            if (process.getSize() <= holes.get(i) && holes.get(i) > maximum) //If the size of the process can fit into the hole being observed and that hole has a larger size than the recorded maximum value...
             {
                 fit = true; //The process is able to fit into something!
-                maximum = holes.get(i);
-                maximumIndex = i;
+                maximum = holes.get(i); //The minimum value is recorded. 
+                maximumIndex = i; //The index in the arraylist where the minimum value is found is recorded as well. 
+                if (holes.get(i) == process.getSize()) //In the case where the size of the hole is exactly equal to the size of the process to fit into memory...
+                {
+                    break; //IMMEDIATELY EXIT THE LOOP; we don't need to go any further. 
+                }
             }
         }
         
         if (fit) //If the process can fit into memory...
         {
+            if (memory.isEmpty()) //If the memory is empty...
+            {
+               process.setBase(0); //The base register of the process is set to 0. 
+            }
+            else //Otherwise, if there is at least one process in memory...
+            {
+                if (maximumIndex == 0 && memory.get(0).getBase() > 0) //If the largest hole is found in the beginning of memory and the base register of the first process is larger than 0...
+                {
+                    process.setBase(0); //The base register of the process is set to 0. 
+                    process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
+                    memory.add(0, process); //The process is added to the beginning of memory. 
+                }
+                else if(maximumIndex == (holes.size()-1) && memory.get(memory.size()-1).getLimit() < MAX) //Otherwise, if the largest hole is found at the end of memory and the limit register of the last process is smaller than the maximum number of addresses...
+                {
+                    process.setBase(memory.get(memory.size()-1).getLimit()); //The base register of the process is set to the limit register of the last process. 
+                    process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
+                    memory.add(process); //The process is added to the end of memory. 
+                }
+                else //If neither of the above cases are true...
+                {
+                    //This for loop will look for the hole in memory between two processes whose length is equal to the largest hole that was found. 
+                    for (int i = 0; i < memory.size()-1; i++)
+                    {
+                        if (memory.get(i+1).getBase() - memory.get(i).getLimit() == maximum) //If the difference between the limit register of the current process and the base register of the process which follows it is equal to the maximum value...
+                        {
+                            process.setBase(memory.get(i).getLimit()); //The base register of the process is set to the limit register of the current process being observed. 
+                            process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
+                            memory.add(i+1, process); //The process is added to the area in memory between the two processes. 
+                            break; //IMMEDIATELY EXIT THE LOOP; we don't need to go any further. 
+                        }
+                    }
+                }
+            }
             
-            
-            //process.setBase(memory.get(minimumIndex).getSize()); //The base register of the processs is set to XXXXX
-            process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
-            memory.add(process); //The process is added to memory. 
-            //holes.set(minimumIndex, holes.get(minimumIndex) - process.getSize()); //The size of the hole is reduced by the size of the process. 
+            holes.set(maximumIndex, holes.get(maximumIndex) - process.getSize()); //The size of the hole is reduced by the size of the process. 
         }
         else //Otherwise, if the process cannot fit into memory... 
         {
