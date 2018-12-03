@@ -2,24 +2,32 @@
 
 public class Process
 {
-    int processID; //The ID number of the process. 
-    int processSize; //The size of the process. 
-    int base, limit; //The base ad limit registers for the process, repsectively. 
+    private int processID; //The ID number of the process. 
+    private int processSize; //The size of the process. 
+    private int base, limit; //The base ad limit registers for the process, repsectively. 
     
     public Process()
     {
-        processID = -1; //By default, the ID number of the process is set to -1. 
-        processSize = -1; //By default, the size of the process is set to -1. 
-        base = -1; //By default, the base register of the process is set to -1. 
-        limit = -1; //By default, the limit register of the process is set to -1. 
+        processID = -1; //
+        processSize = -1; //
+        base = -1; //
+        limit = -1; //
+    }
+    
+    public Process(int processID,int processSize,int base,int limit)
+    {
+        this.processID = processID; //
+        this.processSize = processSize; //
+        this.base = base;
+        this.limit = limit;
     }
     
     public Process(int processID, int processSize)
     {
         this.processID = processID; //
         this.processSize = processSize; //
-        base = -1; //By default, the base register of the process is set to -1. 
-        limit = -1; //By default, the limit register of the process is set to -1. 
+        base = -1; //
+        limit = -1; //
     }
     
     public int getID()
@@ -66,13 +74,14 @@ public class Process
     public String toString()
     {
         return "ID = " + processID +
-                "\nSize = " + processSize;
+                "\nSize = " + processSize +
+                "\nBase = " + base;
     }
     
     //This method will create a clone of the process which invokes the method. 
     public Process deepCopy()
     {
-        return new Process(processID, processSize);
+        return new Process(processID, processSize, base, limit);
     }
     
 }

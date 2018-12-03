@@ -2,7 +2,6 @@ public class Queue
 {
     private Process[] data; //
     private int numberOfNodes; //
-    private int front, rear; //
     private int size; //
     
     //Default constructor
@@ -10,8 +9,6 @@ public class Queue
     {
         size = 100;
         numberOfNodes = 0;
-        front = 0;
-        rear = 0;
         data = new Process[size];
     }
     
@@ -20,8 +17,6 @@ public class Queue
     {
         this.size = size;
         numberOfNodes = 0;
-        front = 0;
-        rear = 0;
         data = new Process[size];
     }
     
@@ -46,9 +41,8 @@ public class Queue
         }
         else
         {
-            numberOfNodes = numberOfNodes + 1; //
-            data[rear] = newNode.deepCopy(); //ERROR: rear is out of bounds!
-            rear = (rear + 1) % size; // Garbage Collection!!       
+            data[numberOfNodes] = newNode.deepCopy(); //ERROR: rear is out of bounds!
+            numberOfNodes++; //
         }
         return true; 
     }
@@ -56,17 +50,22 @@ public class Queue
     //This method will return the object at the head of the queue. 
     public Process deque()
     {
-        int frontLocation;
+        Process frontLocation;
         if(isEmpty()) //If the queue is currently empty...
         {
             return null; //UNDERFLOW ERROR!!
         }
         else
         {
-            frontLocation = front;
-            front = (front + 1) % size; //Garbage Collection!!
-            numberOfNodes = numberOfNodes - 1;
-            return data[frontLocation];
+            frontLocation = data[0].deepCopy();
+            data[0] = null;
+            numberOfNodes--;
+            for(int i = 0; i < numberOfNodes; i++)
+            {
+                data[i] = data[i + 1];
+            }
+            data[numberOfNodes] = null;
+            return frontLocation;
         }
         
     }
@@ -81,9 +80,13 @@ public class Queue
         }
         else
         {
-            frontLocation = front; //
-            return data[frontLocation]; //
+            return data[0]; //
         }
+    }
+    
+    public Process peekAt(int i)
+    {
+        return data[i];
     }
     
     //This method will identify all of th objects currently in the queue. 
@@ -93,6 +96,22 @@ public class Queue
         {
             System.out.println("Item #" + (j+1) + " in Queue:\n" + data[j].toString());
         }
+    }
+    
+    public int getSize()
+    {
+        return this.size;
+    }
+    
+    public int getNumberOfNodes()
+    {
+        return this.numberOfNodes;
+    }
+    
+    public void clear()
+    {
+        this.numberOfNodes = 0;
+        this.data = new Process[size];
     }
     
     //This method will reinitialize the queue. 

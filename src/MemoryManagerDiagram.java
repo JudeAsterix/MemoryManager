@@ -33,7 +33,7 @@ public class MemoryManagerDiagram extends Canvas{
             g.drawString("Segment " + number, 150 - (fm.stringWidth("Segment " + i) / 2), 50 + ((2 * lower + height) / 2) + (fm.getHeight() / 2));
         }
         
-        this.setBackground(Color.white);
+        //this.setBackground(Color.white);
         g.setColor(Color.BLACK);
         g.drawLine(50, 50, 250, 50);
         g.drawLine(250, 550, 250, 50);

@@ -1,27 +1,38 @@
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.io.IOException;
+import java.net.URL;
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Style;
-import javax.swing.text.StyleContext;
 
 /**
- *
  * @author Jandre
  */
 public class MemoryManagerAbout extends JFrame{
     
-    public MemoryManagerAbout()
+    public MemoryManagerAbout() throws IOException
     {
+        setTitle("About Memory Manager");
         setSize(500, 500);
         setEnabled(true);
         setResizable(false);
-        setVisible(true);
+        setLayout(null);
+        JEditorPane editorPane = new JEditorPane();
+        URL aboutURL = MemoryManagerAbout.class.getResource("MemoryManagerAboutHTML.html");
+        editorPane.setPage(aboutURL);
         
-        DefaultStyledDocument dsd = new DefaultStyledDocument();
-        JTextPane textPane = new JTextPane(dsd);
-        StyleContext context = new StyleContext();
-        Style style = context.addStyle("test", null);
+        JScrollPane scrollPane = new JScrollPane(editorPane);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBounds(0,0,497,420);
+        add(scrollPane);
+        
+        JButton exitButton = new JButton("Close");
+        
+        Dimension center = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation(center.width/2 - this.getWidth()/2, center.height/2 - this.getHeight()/2);
+        setVisible(true);
     }
 }

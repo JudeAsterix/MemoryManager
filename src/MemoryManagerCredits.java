@@ -21,6 +21,7 @@ public class MemoryManagerCredits extends JFrame{
         setEnabled(true);
         setResizable(false);
         setLayout(null);
+        
         JLabel label1 = new JLabel("<html><center>A project created by<br> "
                 + "Jude Andre and Joshua Papello<br>"
                 + "Made for St. Joseph's College's<br>"
