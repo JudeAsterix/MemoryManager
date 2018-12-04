@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Random;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -39,11 +40,11 @@ public class MemoryManagerFrame extends JFrame
     MemoryManagerMenu menu = new MemoryManagerMenu();               //The menu is used for miscellaneous things
     
     //Segment Table Data
-    String[] segmentTableNames  = {"Segment #", "Segment Base", "Segment Length", "Burst Time"};    //These are the names of the segment table
+    String[] segmentTableNames  = {"Segment #", "Segment Base", "Segment Length"};    //These are the names of the segment table
     Object[][] segmentTableData = {};          //This is the segment table's data
     
     //Queue Table Data
-    String[] queueTableNames  = {"Segment #", "Segment Length", "Burst Time"};      //These are the names of the queue table
+    String[] queueTableNames  = {"Segment #", "Segment Length"};      //These are the names of the queue table
     Object[][] queueTableData = {};                                                                 //This is the queue table's data
     int numberOfSegments = 3;
     
@@ -275,6 +276,28 @@ public class MemoryManagerFrame extends JFrame
                                     updateTable(2);
                                 }
                             }
+                            else if(panel3.buttons[1].isSelected())
+                            {
+                                if(memoryManager.bestFit(p))
+                                {
+                                    updateTable(1);
+                                }
+                                else
+                                {
+                                    updateTable(2);
+                                }
+                            }
+                            else if(panel3.buttons[2].isSelected())
+                            {
+                                if(memoryManager.worstFit(p))
+                                {
+                                    updateTable(1);
+                                }
+                                else
+                                {
+                                    updateTable(2);
+                                }
+                            }
                         }
                     }
                     catch(NumberFormatException ex)
@@ -285,7 +308,44 @@ public class MemoryManagerFrame extends JFrame
             }
             else if(e.getSource() == panel1.getComponent(1))
             {
-                
+                Process p = new Process();
+                Random rand = new Random();
+                p.setSize(rand.nextInt(240) + 10);
+                p.setID(memoryManager.getNumberOfProcessesInMemory());
+                JOptionPane.showMessageDialog(null, "A process with length " + p.getSize() + " has been added.");
+                if(panel3.buttons[0].isSelected())
+                {
+                    if(memoryManager.firstFit(p))
+                    {
+                        updateTable(1);
+                    }
+                    else
+                    {
+                        updateTable(2);
+                    }
+                }
+                else if(panel3.buttons[1].isSelected())
+                {
+                    if(memoryManager.bestFit(p))
+                    {
+                        updateTable(1);
+                    }
+                    else
+                    {
+                        updateTable(2);
+                    }
+                }
+                else if(panel3.buttons[2].isSelected())
+                {
+                    if(memoryManager.worstFit(p))
+                    {
+                        updateTable(1);
+                    }
+                    else
+                    {
+                        updateTable(2);
+                    }
+                }
             }
         }
     }

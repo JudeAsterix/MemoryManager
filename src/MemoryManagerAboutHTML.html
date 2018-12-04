@@ -9,9 +9,20 @@ and open the template in the editor.
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            br{
+                display: block;
+                margin:10px 0;
+            }
+        </style>
     </head>
     <body>
-        <h1>Memory Manager</h1>
+        <pre>                                                             
+ _____                          _____                         
+|     |___ _____ ___ ___ _ _   |     |___ ___ ___ ___ ___ ___ 
+| | | | -_|     | . |  _| | |  | | | | .'|   | .'| . | -_|  _|
+|_|_|_|___|_|_|_|___|_| |_  |  |_|_|_|__,|_|_|__,|_  |___|_|  
+                        |___|                    |___|        </pre>
         <h2>How to Use</h2>
         <h3>Adding Processes</h3>
         <p>        
@@ -19,15 +30,17 @@ and open the template in the editor.
         </p>
         <p>
             If the memory box has enough space, the process will be placed in memory. How it will be placed depends on the radio box selected.
-            <ul>
-                <li>First Fit: The process will be stored in the first hole of memory it can fit in.</li>
-                <li>Best Fit: The process will be stored in the hole of memory that leaves the smallest hole when placed.</li>
-                <li>Worst Fit: The process will be stored in the hole of memory that leaves the largest hole when placed.</li>
-            </ul>
+        </p>    
+        <ul>
+            <li>First Fit: The process will be stored in the first hole of memory it can fit in.</li>
+            <li>Best Fit: The process will be stored in the hole of memory that leaves the smallest hole when placed.</li>
+            <li>Worst Fit: The process will be stored in the hole of memory that leaves the largest hole when placed.</li>
+        </ul>
+        <p>
         For Best Fit and Worst Fit, if there exist two or more holes of the same length that fit the respective criteria, the hole will be chosen via First Fit, i.e. the hole with the smallest base address will be chosen.
         </p>
         <p>
-            If the memory box doesn't have enough space, the memory will automatically compact in an attempt to make a hole big enough for the process to be placed. If that doesn't work, the process will be placed on a waiting queue. This queue's scheduling algorithm is First In, Last Out, meaning the least recently placed process in the queue will always be the next to be placed in memory.
+            If the memory box does not have enough space, the memory will automatically compact in an attempt to make a hole big enough for the process to be placed. If that doesn't work, the process will be placed on a waiting queue. This queue's scheduling algorithm is First In, Last Out, meaning the least recently placed process in the queue will always be the next to be placed in memory.
         </p>
         <h3>Deleting Processes</h3>
         <p>To delete a single process, press the 'Remove Process' button. A dialog box will appear that will ask you to specify which process to remove. Select the desired process and press OK. If any of the processes can fit in the hole that the process was in, a popup box will appear, notifying you that the process is being placed into memory.
@@ -42,9 +55,9 @@ and open the template in the editor.
         <h2>Assumptions</h2>
         <ol>
             <li>Up to 15 Processes may be stored cumulatively.</li>
-            <li>The waiting queue uses a First In Last Out algorithm.<li>
-            <li>Processes must be between 10 and 250 KB [inclusive]</li>
-            <li>Quantums must be between 1 and 10 time units [inclusive]</li>
+            <li>The waiting queue uses a First In Last Out algorithm.</li>
+            <li>Processes must be between 10 and 250 KB. [inclusive]</li>
+            <li>The length of memory is at a fixed size of 500 KB.</li>
         </ol>
     </body>
 </html>

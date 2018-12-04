@@ -148,18 +148,44 @@ public class MemoryManager
         if(fit) //If the process can fit into memory... 
         {
             memory.add(process); //The process is added to memory. 
+            return true;
         }
         else //If the process cannot fit into memory...
         {
-            process.setID(waitingQueue.getNumberOfNodes());
-            waitingQueue.enque(process); //The process is added to the waiting queue. 
+            return this.compactAndCheckIfFits(process);
         }
-        return fit;
     }
-    /*
-    //Th//This method will invoke the first-fit allocation algorithm, in which the input process is placed in the smallest hole which is large enough to contain it. 
-    public static void bestFit(Process process)
+    
+    //This method will invoke the first-fit allocation algorithm, in which the input process is placed in the smallest hole which is large enough to contain it. 
+    public boolean bestFit(Process process)
     {
+        ArrayList<Process> sortedProcesses = this.getProcessesSortedByBase();
+        
+        ArrayList<Integer> holes = new ArrayList<>();
+        
+        for(int i = 0; i <= sortedProcesses.size(); i++)
+        {
+            if(i == 0)
+            {
+                if(memory.isEmpty())
+                {
+                    holes.add(MAX);
+                }
+                else
+                {
+                    holes.add(sortedProcesses.get(0).getBase());
+                }
+            }
+            else if(i == sortedProcesses.size())
+            {
+                holes.add(MAX - sortedProcesses.get(sortedProcesses.size() - 1).getLimit());
+            }
+            else
+            {
+                holes.add(sortedProcesses.get(i).getBase() - sortedProcesses.get(i - 1).getLimit());
+            }
+        }
+        
         boolean fit = false; //Flag indicating whether the process passed in through the parameter is able to fit into memory.
         int minimum = Integer.MAX_VALUE; //The size of the smallest hole cuurnetly in memory. 
         int minimumIndex = -1; //Index in arraylist at which the desired minimum value is found
@@ -184,6 +210,8 @@ public class MemoryManager
             if (memory.isEmpty()) //If the memory is empty...
             {
                process.setBase(0); //The base register of the process is set to 0. 
+               process.setLimit(process.getSize());
+               memory.add(process);
             }
             else //Otherwise, if there is at least one process in memory...
             {
@@ -208,7 +236,7 @@ public class MemoryManager
                         {
                             process.setBase(memory.get(i).getLimit()); //The base register of the process is set to the limit register of the current process being observed. 
                             process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
-                            memory.add(i+1, process); //The process is added to the area in memory between the two processes. 
+                            memory.add(process); //The process is added to the area in memory between the two processes. 
                             break; //IMMEDIATELY EXIT THE LOOP; we don't need to go any further. 
                         }
                     }
@@ -216,16 +244,43 @@ public class MemoryManager
             }
             
             holes.set(minimumIndex, holes.get(minimumIndex) - process.getSize()); //The size of the hole is reduced by the size of the process. 
+            return true;
         }
         else //Otherwise, if the process cannot fit into memory... 
         {
-            waitingQueue.enque(process); //The process is added to the waiting queue. 
+            return this.compactAndCheckIfFits(process);
         }
     }
     
     //This method will invoke thre first-fit allocation algorithm, in which the input process is placed in the largest hole which is large enough to contain it. 
-    public static void worstFit(Process process)
+    public boolean worstFit(Process process)
     {
+        ArrayList<Process> sortedProcesses = this.getProcessesSortedByBase();
+        ArrayList<Integer> holes = new ArrayList<>();
+        
+        for(int i = 0; i <= sortedProcesses.size(); i++)
+        {
+            if(i == 0)
+            {
+                if(memory.isEmpty())
+                {
+                    holes.add(MAX);
+                }
+                else
+                {
+                    holes.add(sortedProcesses.get(0).getBase());
+                }
+            }
+            else if(i == sortedProcesses.size())
+            {
+                holes.add(MAX - sortedProcesses.get(sortedProcesses.size() - 1).getLimit());
+            }
+            else
+            {
+                holes.add(sortedProcesses.get(i).getBase() - sortedProcesses.get(i - 1).getLimit());
+            }
+        }
+        
         boolean fit = false; //Flag indicating whether the process passed in through the parameter is able to fit into memory.
         int maximum = Integer.MIN_VALUE; //The size of the largest hole cuurnetly in memory. 
         int maximumIndex = -1; //Index in arraylist at which the desired maximum value is found
@@ -250,6 +305,8 @@ public class MemoryManager
             if (memory.isEmpty()) //If the memory is empty...
             {
                process.setBase(0); //The base register of the process is set to 0. 
+               process.setLimit(process.getSize());
+               memory.add(process);
             }
             else //Otherwise, if there is at least one process in memory...
             {
@@ -282,13 +339,35 @@ public class MemoryManager
             }
             
             holes.set(maximumIndex, holes.get(maximumIndex) - process.getSize()); //The size of the hole is reduced by the size of the process. 
+            return true;
         }
         else //Otherwise, if the process cannot fit into memory... 
         {
-            waitingQueue.enque(process); //The process is added to the waiting queue. 
+            return this.compactAndCheckIfFits(process);
         }
     }
-    */
+    
+    public boolean compactAndCheckIfFits(Process p)
+    {
+        JOptionPane.showMessageDialog(null, "Process cannot fit in memory.\nCompacting to attempt to fit into memory.");
+        compact();
+        ArrayList<Process> sortedProcesses = this.getProcessesSortedByBase();
+        if(p.getSize() <= MAX - sortedProcesses.get(sortedProcesses.size() - 1).getLimit())
+        {
+            JOptionPane.showMessageDialog(null, "Attempt successful.\nStoring into memory.");
+            p.setBase(sortedProcesses.get(sortedProcesses.size() - 1).getLimit());
+            p.setLimit(p.getBase() + p.getSize());
+            memory.add(p);
+            return true;
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "Attempt unsuccessful.\nAdding to the waiting queue.");
+            p.setID(waitingQueue.getNumberOfNodes());
+            waitingQueue.enque(p); //The process is added to the waiting queue. 
+            return false;
+        }
+    }
     
     public void compact()
     {
@@ -355,7 +434,6 @@ public class MemoryManager
                 ret[i][0] = (Integer)memory.get(i).getID();
                 ret[i][1] = (Integer)memory.get(i).getBase();
                 ret[i][2] = (Integer)memory.get(i).getSize();
-                ret[i][3] = (Integer)0;
             }
         }
         else
@@ -366,7 +444,6 @@ public class MemoryManager
             {
                 temp[i][0] = waitingQueue.peekAt(i).getID();
                 temp[i][1] = waitingQueue.peekAt(i).getSize();
-                temp[i][2] = 0;
                 i++;
             }
             ret = new Object[i][3];
@@ -374,7 +451,6 @@ public class MemoryManager
             {
                 ret[j][0] = temp[j][0];
                 ret[j][1] = temp[j][1];
-                ret[j][2] = temp[j][2];
             }
         }
         return ret;
@@ -418,7 +494,16 @@ public class MemoryManager
             int after = sorted.get(i + 1).getID();
             int a = memory.get(after).getBase();
             int b = memory.get(before).getLimit(); 
-            int c = waitingQueue.peek().getSize();
+            int c = 0;
+            try
+            {
+                c = waitingQueue.peek().getSize();
+            }
+            catch(NullPointerException e)
+            {
+                break;
+            }
+            
             if(waitingQueue.isEmpty())
             {
                 return;
