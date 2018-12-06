@@ -9,8 +9,8 @@ import javax.swing.JOptionPane;
 
 public class MemoryManager
 {
-    private Queue waitingQueue = new Queue(10); //Creates a queue of length 10 for the waiting processes. 
-    private ArrayList<Process> memory = new ArrayList<Process>(); //Main memory is an arraylist of process. Initial capacity of 10. 
+    private Queue waitingQueue = new Queue(); //Creates a queue of length 10 for the waiting processes. 
+    private ArrayList<Process> memory = new ArrayList<>(); //Main memory is an arraylist of process. Initial capacity of 10. 
     private final int MAX = 500; //The maximum address in memory
     
     public MemoryManager()
@@ -215,15 +215,15 @@ public class MemoryManager
             }
             else //Otherwise, if there is at least one process in memory...
             {
-                if (minimumIndex == 0 && memory.get(0).getBase() > 0) //If the smallest hole is found in the beginning of memory and the base register of the first process is larger than 0...
+                if (minimumIndex == 0 && memory.get(sortedProcesses.get(0).getID()).getBase() > 0) //If the smallest hole is found in the beginning of memory and the base register of the first process is larger than 0...
                 {
                     process.setBase(0); //The base register of the process is set to 0. 
                     process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
                     memory.add(0, process); //The process is added to the beginning of memory. 
                 }
-                else if(minimumIndex == (holes.size()-1) && memory.get(memory.size()-1).getLimit() < MAX) //Otherwise, if the smallest hole is found at the end of memory and the limit register of the last process is smaller than the maximum number of addresses...
+                else if(minimumIndex == (holes.size()-1) && memory.get(sortedProcesses.get(memory.size()-1).getID()).getLimit() < MAX) //Otherwise, if the smallest hole is found at the end of memory and the limit register of the last process is smaller than the maximum number of addresses...
                 {
-                    process.setBase(memory.get(memory.size()-1).getLimit()); //The base register of the process is set to the limit register of the last process. 
+                    process.setBase(memory.get(sortedProcesses.get(memory.size()-1).getID()).getLimit()); //The base register of the process is set to the limit register of the last process. 
                     process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
                     memory.add(process); //The process is added to the end of memory. 
                 }
@@ -232,9 +232,9 @@ public class MemoryManager
                     //This for loop will look for the hole in memory between two processes whose length is equal to the smallest hole that was found. 
                     for (int i = 0; i < memory.size()-1; i++)
                     {
-                        if (memory.get(i+1).getBase() - memory.get(i).getLimit() == minimum) //If the difference between the limit register of the current process and the base register of the process which follows it is equal to the minimum value...
+                        if (memory.get(sortedProcesses.get(i + 1).getID()).getBase() - memory.get(sortedProcesses.get(i).getID()).getLimit() == minimum) //If the difference between the limit register of the current process and the base register of the process which follows it is equal to the minimum value...
                         {
-                            process.setBase(memory.get(i).getLimit()); //The base register of the process is set to the limit register of the current process being observed. 
+                            process.setBase(memory.get(sortedProcesses.get(i).getID()).getLimit()); //The base register of the process is set to the limit register of the current process being observed. 
                             process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
                             memory.add(process); //The process is added to the area in memory between the two processes. 
                             break; //IMMEDIATELY EXIT THE LOOP; we don't need to go any further. 
@@ -293,12 +293,13 @@ public class MemoryManager
                 fit = true; //The process is able to fit into something!
                 maximum = holes.get(i); //The minimum value is recorded. 
                 maximumIndex = i; //The index in the arraylist where the minimum value is found is recorded as well. 
-                if (holes.get(i) == process.getSize()) //In the case where the size of the hole is exactly equal to the size of the process to fit into memory...
+                /*if (holes.get(i) == process.getSize()) //In the case where the size of the hole is exactly equal to the size of the process to fit into memory...
                 {
                     break; //IMMEDIATELY EXIT THE LOOP; we don't need to go any further. 
-                }
+                }*/
             }
         }
+        
         
         if (fit) //If the process can fit into memory...
         {
@@ -310,15 +311,15 @@ public class MemoryManager
             }
             else //Otherwise, if there is at least one process in memory...
             {
-                if (maximumIndex == 0 && memory.get(0).getBase() > 0) //If the largest hole is found in the beginning of memory and the base register of the first process is larger than 0...
+                if (maximumIndex == 0 && memory.get(sortedProcesses.get(0).getID()).getBase() > 0) //If the largest hole is found in the beginning of memory and the base register of the first process is larger than 0...
                 {
                     process.setBase(0); //The base register of the process is set to 0. 
                     process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
-                    memory.add(0, process); //The process is added to the beginning of memory. 
+                    memory.add(process); //The process is added to the beginning of memory. 
                 }
-                else if(maximumIndex == (holes.size()-1) && memory.get(memory.size()-1).getLimit() < MAX) //Otherwise, if the largest hole is found at the end of memory and the limit register of the last process is smaller than the maximum number of addresses...
+                else if(maximumIndex == (holes.size()-1) && memory.get(sortedProcesses.get(memory.size()-1).getID()).getLimit() < MAX) //Otherwise, if the largest hole is found at the end of memory and the limit register of the last process is smaller than the maximum number of addresses...
                 {
-                    process.setBase(memory.get(memory.size()-1).getLimit()); //The base register of the process is set to the limit register of the last process. 
+                    process.setBase(memory.get(sortedProcesses.get(memory.size()-1).getID()).getLimit()); //The base register of the process is set to the limit register of the last process. 
                     process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
                     memory.add(process); //The process is added to the end of memory. 
                 }
@@ -327,11 +328,11 @@ public class MemoryManager
                     //This for loop will look for the hole in memory between two processes whose length is equal to the largest hole that was found. 
                     for (int i = 0; i < memory.size()-1; i++)
                     {
-                        if (memory.get(i+1).getBase() - memory.get(i).getLimit() == maximum) //If the difference between the limit register of the current process and the base register of the process which follows it is equal to the maximum value...
+                        if (memory.get(sortedProcesses.get(i + 1).getID()).getBase() - memory.get(sortedProcesses.get(i).getID()).getLimit() == maximum) //If the difference between the limit register of the current process and the base register of the process which follows it is equal to the maximum value...
                         {
-                            process.setBase(memory.get(i).getLimit()); //The base register of the process is set to the limit register of the current process being observed. 
+                            process.setBase(memory.get(sortedProcesses.get(i).getID()).getLimit()); //The base register of the process is set to the limit register of the current process being observed. 
                             process.setLimit(process.getBase() + process.getSize()); //The limit of the new process is its base added to its size. 
-                            memory.add(i+1, process); //The process is added to the area in memory between the two processes. 
+                            memory.add(process); //The process is added to the area in memory between the two processes. 
                             break; //IMMEDIATELY EXIT THE LOOP; we don't need to go any further. 
                         }
                     }
@@ -347,7 +348,7 @@ public class MemoryManager
         }
     }
     
-    public boolean compactAndCheckIfFits(Process p)
+    public boolean compactAndCheckIfFits(Process p)  //This method will be called if a process can't be fit into memory.
     {
         JOptionPane.showMessageDialog(null, "Process cannot fit in memory.\nCompacting to attempt to fit into memory.");
         compact();
@@ -369,20 +370,21 @@ public class MemoryManager
         }
     }
     
-    public void compact()
+    public void compact() //This method will be called if the compact button is pressed.
     {
         ArrayList<Process> sorted = getProcessesSortedByBase();
         for(int i = 0; i < sorted.size(); i++)
         {
+            int refID = sorted.get(i).getID();
             if(i == 0)
             {
-                memory.get(sorted.get(i).getID()).setBase(0);
-                memory.get(sorted.get(i).getID()).setLimit(memory.get(sorted.get(i).getID()).getSize());
+                memory.get(refID).setBase(0);
+                memory.get(refID).setLimit(memory.get(refID).getSize());
             }
             else
             {
-                memory.get(sorted.get(i).getID()).setBase(memory.get(sorted.get(i - 1).getID()).getLimit());
-                memory.get(sorted.get(i).getID()).setLimit(memory.get(sorted.get(i).getID()).getBase() + memory.get(sorted.get(i).getID()).getSize());
+                memory.get(refID).setBase(memory.get(sorted.get(i - 1).getID()).getLimit());
+                memory.get(refID).setLimit(memory.get(refID).getBase() + memory.get(refID).getSize());
             }
         }
         checkIfCanDeque();
@@ -459,9 +461,9 @@ public class MemoryManager
     public void removeProcess(int index)
     {
         memory.remove(index);
-        for(int i = index; i < memory.size(); i++)
+        for(int i = 0; i < memory.size(); i++)
         {
-            memory.get(i).setID(memory.get(i).getID() - 1);
+            memory.get(i).setID(i);
         }
         checkIfCanDeque();
     }
@@ -470,9 +472,11 @@ public class MemoryManager
     {
         ArrayList<Process> sorted = getProcessesSortedByBase();
         
-        if(waitingQueue.getNumberOfNodes() > 0)
+        if(waitingQueue.isEmpty())
         {
-            
+            return;
+        }
+        
         if(memory.isEmpty() || sorted.get(0).getBase() > waitingQueue.peek().getSize())
         {
             Process p = waitingQueue.deque();
@@ -481,10 +485,6 @@ public class MemoryManager
             p.setLimit(p.getBase() + p.getSize());
             memory.add(p);
             JOptionPane.showMessageDialog(null, "The firstmost process of the Waiting Queue has been automatically placed into memory. Its ID number is now " + p.getID() + "." );
-        }
-        if(waitingQueue.isEmpty())
-        {
-            return;
         }
             
         sorted = getProcessesSortedByBase();
@@ -556,8 +556,6 @@ public class MemoryManager
                 }
             }
         }
-        
-    }
     
     public void reset()
     {

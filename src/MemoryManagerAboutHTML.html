@@ -1,9 +1,5 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
+<!-- Author: Jude Andre -->
 <html>
     <head>
         <title>TODO supply a title</title>
@@ -26,7 +22,7 @@ and open the template in the editor.
         <h2>How to Use</h2>
         <h3>Adding Processes</h3>
         <p>        
-            You can add processes in two ways. The first way is to manually input a process. Click on the 'Add New Process' button. An input box will pop up and ask you for the length of the process. Type in the length and press enter. The second way is to add a random process by clicking the 'Add Random Process' button. The process's length will range from lengths 10 to 10d0, inclusively.
+            You can add processes in two ways. The first way is to manually input a process. Click on the 'Add New Process' button. An input box will pop up and ask you for the length of the process. Type in the length and press enter. The second way is to add a random process by clicking the 'Add Random Process' button. The process's length will range from 10 to 250 KB, inclusively.
         </p>
         <p>
             If the memory box has enough space, the process will be placed in memory. How it will be placed depends on the radio box selected.
@@ -37,13 +33,13 @@ and open the template in the editor.
             <li>Worst Fit: The process will be stored in the hole of memory that leaves the largest hole when placed.</li>
         </ul>
         <p>
-        For Best Fit and Worst Fit, if there exist two or more holes of the same length that fit the respective criteria, the hole will be chosen via First Fit, i.e. the hole with the smallest base address will be chosen.
+            For Best Fit and Worst Fit, if there exist two or more holes of the same length that fit the respective criteria, the hole will be chosen via First Fit, i.e. the hole with the smallest base address will be chosen.
         </p>
         <p>
             If the memory box does not have enough space, the memory will automatically compact in an attempt to make a hole big enough for the process to be placed. If that doesn't work, the process will be placed on a waiting queue. This queue's scheduling algorithm is First In, Last Out, meaning the least recently placed process in the queue will always be the next to be placed in memory.
         </p>
         <h3>Deleting Processes</h3>
-        <p>To delete a single process, press the 'Remove Process' button. A dialog box will appear that will ask you to specify which process to remove. Select the desired process and press OK. If any of the processes can fit in the hole that the process was in, a popup box will appear, notifying you that the process is being placed into memory.
+        <p>To delete a single process, press the 'Remove Process' button. A dialog box will appear that will ask you to specify which process to remove. Select the desired process and press OK. If any of the processes can fit in the hole that the process was in, a pop-up box will appear, notifying you that the process is being placed into memory.
         </p>
         <p>
             To delete all processes, press the 'Reset' button. When pressed, all processes in memory and in the waiting queue will be deleted.
@@ -55,7 +51,7 @@ and open the template in the editor.
         <h2>Assumptions</h2>
         <ol>
             <li>Up to 15 Processes may be stored cumulatively.</li>
-            <li>The waiting queue uses a First In Last Out algorithm.</li>
+            <li>The waiting queue uses a First Come First Served algorithm.</li>
             <li>Processes must be between 10 and 250 KB. [inclusive]</li>
             <li>The length of memory is at a fixed size of 500 KB.</li>
         </ol>

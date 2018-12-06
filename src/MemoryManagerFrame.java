@@ -249,6 +249,12 @@ public class MemoryManagerFrame extends JFrame
     {
         public void actionPerformed(ActionEvent e)
         {
+            if(memoryManager.getNumberOfProcesses() == 15)
+            {
+                JOptionPane.showMessageDialog(null, "Sorry, you can only add up to 15 processes.", "Too many processes", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
             if(e.getSource() == panel1.getComponent(0))
             {
                 Integer i;
@@ -302,7 +308,7 @@ public class MemoryManagerFrame extends JFrame
                     }
                     catch(NumberFormatException ex)
                     {
-                        JOptionPane.showMessageDialog(null, "Error: Whatever was input was not a number.");
+                        JOptionPane.showMessageDialog(null, "Error: Whatever was input was not a number.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -366,6 +372,11 @@ public class MemoryManagerFrame extends JFrame
     public class RemoveSegmentAction implements ActionListener
     {
         public void actionPerformed(ActionEvent ae) {
+            if(memoryManager.getNumberOfProcessesInMemory() == 0)
+            {
+                JOptionPane.showMessageDialog(null, "Sorry, there are no processes to remove.", "No prcoesses", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             Object[] list = new Object[memoryManager.getNumberOfProcessesInMemory()];
             
             for(int i = 0; i < list.length; i++)

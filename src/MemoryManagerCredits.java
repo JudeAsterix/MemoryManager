@@ -27,7 +27,9 @@ public class MemoryManagerCredits extends JFrame{
                 + "Made for St. Joseph's College's<br>"
                 + "COM-310 Course <br>"
                 + "Ran by Sister Jane Fritz<br>"
-                + "Created in 2018</center></html>", SwingConstants.CENTER);
+                + "Created in 2018<br><br>"
+                + "Rectangles ASCII Font by David Villegas</center><br>"
+                , SwingConstants.CENTER);
         label1.setBounds(0, 0, 300, 180);
         label1.setFont(new Font("Times New Roman", Font.PLAIN, 16));
         add(label1);

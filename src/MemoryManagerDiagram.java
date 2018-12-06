@@ -7,6 +7,8 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+//@Author Jude Andre
+
 public class MemoryManagerDiagram extends Canvas{
     private int[][] segmentData = {{0, 0, 50}, {1, 150, 25}, {2, 200, 200}}; //Stores the segment base, length, snd number, respectively.
     

@@ -1,3 +1,5 @@
+//@Author JPapello
+
 public class Queue
 {
     private Process[] data; //
